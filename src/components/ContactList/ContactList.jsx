@@ -1,13 +1,24 @@
-import PropTypes from 'prop-types';
 import { List, Item, Text, Button } from './ContactList.styled';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteContact } from 'redux/contactsSlice';
+import { getContacts, getFilterValue } from 'redux/contactsSlice';
 
-export function ContactList({ contacts }) {
+export function ContactList() {
   const dispatch = useDispatch();
+
+  const filter = useSelector(getFilterValue);
+  const contacts = useSelector(getContacts);
+
+  const visibleContacts = () => {
+    const normalizeFilter = filter.toLocaleLowerCase();
+    return contacts.filter(contact =>
+      contact.name.toLocaleLowerCase().includes(normalizeFilter)
+    );
+  };
+
   return (
     <List>
-      {contacts.map(contact => {
+      {visibleContacts().map(contact => {
         return (
           <Item key={contact.id}>
             <Text>
@@ -25,7 +36,3 @@ export function ContactList({ contacts }) {
     </List>
   );
 }
-
-ContactList.propTypes = {
-  contacts: PropTypes.array.isRequired,
-};
